@@ -105,6 +105,7 @@ const hiragana = {
 
 let timeLeft = 10;
 let showHint = false;
+let showSound = false;
 
 function hideHints() {
     document.getElementById('romaji').textContent = '???';
@@ -117,17 +118,25 @@ function showHints(kana) {
     document.getElementById('pronunciation').textContent = info.pronunciation;
 }
 
+function playSound(kana) {
+    // 建立語音合成
+    const utterance = new SpeechSynthesisUtterance(kana);
+    utterance.lang = 'ja-JP';
+    utterance.volume = 1;
+    utterance.rate = 0.8;
+    speechSynthesis.speak(utterance);
+}
+
 function updateDisplay() {
     const kanas = Object.keys(hiragana);
     const randomKana = kanas[Math.floor(Math.random() * kanas.length)];
     
-    // 只更新假名，隱藏提示
     document.getElementById('kana').textContent = randomKana;
     hideHints();
     
-    // 重置計時器和提示狀態
     timeLeft = 10;
     showHint = false;
+    showSound = false;
     document.getElementById('timer').textContent = timeLeft;
 }
 
@@ -135,11 +144,18 @@ function updateTimer() {
     timeLeft--;
     document.getElementById('timer').textContent = timeLeft;
 
+    const currentKana = document.getElementById('kana').textContent;
+
     // 在第5秒時顯示羅馬拼音和發音提示
     if (timeLeft === 5 && !showHint) {
-        const currentKana = document.getElementById('kana').textContent;
         showHints(currentKana);
         showHint = true;
+    }
+
+    // 在最後3秒時播放發音
+    if (timeLeft <= 3 && !showSound) {
+        playSound(currentKana);
+        showSound = true;
     }
 
     // 時間到時更新假名
@@ -148,8 +164,12 @@ function updateTimer() {
     }
 }
 
-// 初始顯示
-updateDisplay();
-
-// 設定計時器
-setInterval(updateTimer, 1000); 
+// 確保瀏覽器支援語音合成
+if ('speechSynthesis' in window) {
+    // 初始顯示
+    updateDisplay();
+    // 設定計時器
+    setInterval(updateTimer, 1000);
+} else {
+    alert('您的瀏覽器不支援語音合成功能，請使用較新版本的瀏覽器。');
+} 
