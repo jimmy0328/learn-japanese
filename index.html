@@ -1,24 +1,43 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="ja" class="h-full bg-gray-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日文50音練習</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Hiragana Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>日文50音練習</h1>
-        <div class="card">
-            <div class="kana" id="kana">あ</div>
-            <div class="info">
-                <div class="romaji" id="romaji">a</div>
-                <div class="pronunciation" id="pronunciation">as in "father"</div>
-            </div>
-            <div class="timer-container">
-                <div class="timer-label">下一個假名在</div>
-                <div class="timer" id="timer">10</div>
-                <div class="timer-label">秒後更新</div>
+<body class="h-full">
+    <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <h1 class="text-center text-3xl font-bold tracking-tight text-gray-900">
+                Hiragana Learning
+            </h1>
+        </div>
+
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <!-- Kana Card -->
+                <div class="text-center">
+                    <div id="kana" class="text-[120px] font-bold text-gray-900 mb-8"></div>
+                    
+                    <div class="space-y-4">
+                        <!-- Romaji -->
+                        <div>
+                            <div id="romaji" class="text-3xl font-semibold text-indigo-600"></div>
+                        </div>
+                        
+                        <!-- Pronunciation -->
+                        <div>
+                            <div id="pronunciation" class="text-lg text-gray-500"></div>
+                        </div>
+                    </div>
+
+                    <!-- Timer -->
+                    <div class="mt-6 flex items-center justify-center gap-x-2">
+                        <div id="timer" class="text-2xl font-semibold text-rose-600"></div>
+                        <span class="text-sm text-gray-500">seconds</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
