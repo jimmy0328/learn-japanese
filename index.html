@@ -1,46 +1,358 @@
 <!DOCTYPE html>
-<html lang="ja" class="h-full bg-gray-50">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>五十音練習</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>日文五十音隨機練習器 (選擇範圍)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        #selection-area {
+            width: 90%;
+            max-width: 700px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        #selection-area h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #5cb85c;
+            padding-bottom: 10px;
+            color: #5cb85c;
+        }
+
+        .kana-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .kana-row label {
+            width: 45%; /* 讓每行顯示兩個選項 */
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        #start-button {
+            width: 100%;
+            padding: 12px 25px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            background-color: #f0ad4e; /* 橙色，表示準備開始 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        #start-button.running {
+            background-color: #d9534f; /* 運行時變紅色 */
+        }
+        
+        #kana-display-area {
+            text-align: center;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        #kana-display {
+            font-size: 15vw; /* 讓字夠大 */
+            font-weight: bold;
+            color: #333;
+            min-height: 25vh; /* 確保內容區域不會跳動 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        }
+
+        #info-display {
+            font-size: 5vw;
+            color: #d9534f;
+            min-height: 10vh; /* 確保內容區域不會跳動 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0; 
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .show {
+            opacity: 1 !important;
+        }
+
+        #timer-display {
+            font-size: 2vw;
+            margin-top: 15px;
+            color: #5cb85c;
+        }
+    </style>
 </head>
-<body class="h-full">
-    <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div class="sm:mx-auto sm:w-full sm:max-w-md">
-            <h1 class="text-center text-3xl font-bold tracking-tight text-gray-900">
-              五十音練習
-            </h1>
-        </div>
+<body>
 
-        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                <!-- Kana Card -->
-                <div class="text-center">
-                    <div id="kana" class="text-[120px] font-bold text-gray-900 mb-8"></div>
-                    
-                    <div class="space-y-4">
-                        <!-- Romaji -->
-                        <div>
-                            <div id="romaji" class="text-3xl font-semibold text-indigo-600"></div>
-                        </div>
-                        
-                        <!-- Pronunciation -->
-                        <div>
-                            <div id="pronunciation" class="text-lg text-gray-500"></div>
-                        </div>
-                    </div>
+    <h1>日文五十音隨機練習器</h1>
 
-                    <!-- Timer -->
-                    <div class="mt-6 flex items-center justify-center gap-x-2">
-                        <div id="timer" class="text-2xl font-semibold text-rose-600"></div>
-                        <span class="text-sm text-gray-500">seconds</span>
-                    </div>
-                </div>
-            </div>
+    <div id="selection-area">
+        <h2>選擇練習範圍 (平假名)</h2>
+        
+        <div class="kana-row">
+            <label><input type="checkbox" name="kana-group" value="A" checked> あ行 (a, i, u, e, o)</label>
+            <label><input type="checkbox" name="kana-group" value="KA" checked> か行 (ka, ki, ku, ke, ko)</label>
         </div>
+        <div class="kana-row">
+            <label><input type="checkbox" name="kana-group" value="SA" checked> さ行 (sa, shi, su, se, so)</label>
+            <label><input type="checkbox" name="kana-group" value="TA" checked> た行 (ta, chi, tsu, te, to)</label>
+        </div>
+        <div class="kana-row">
+            <label><input type="checkbox" name="kana-group" value="NA" checked> な行 (na, ni, nu, ne, no)</label>
+            <label><input type="checkbox" name="kana-group" value="HA" checked> は行 (ha, hi, fu, he, ho)</label>
+        </div>
+        <div class="kana-row">
+            <label><input type="checkbox" name="kana-group" value="MA" checked> ま行 (ma, mi, mu, me, mo)</label>
+            <label><input type="checkbox" name="kana-group" value="YA" checked> や行 (ya, yu, yo)</label>
+        </div>
+        <div class="kana-row">
+            <label><input type="checkbox" name="kana-group" value="RA" checked> ら行 (ra, ri, ru, re, ro)</label>
+            <label><input type="checkbox" name="kana-group" value="WA_N" checked> わ/ん (wa, wo, n)</label>
+        </div>
+        
+        <button id="start-button" onclick="startGenerator()">開始練習 / 重新開始</button>
     </div>
-    <script src="script.js"></script>
+
+    <div id="kana-display-area">
+        <div id="kana-display">請在上方選擇範圍，然後點擊「開始練習」</div>
+        <div id="info-display"></div>
+        <div id="timer-display"></div>
+    </div>
+    
+    <audio id="kana-audio" style="display:none;"></audio> 
+
+    <script>
+        // 五十音平假名及其羅馬拼音，按行分組
+        const kanaGroups = {
+            'A':    {'あ': 'a', 'い': 'i', 'う': 'u', 'え': 'e', 'お': 'o'},
+            'KA':   {'か': 'ka', 'き': 'ki', 'く': 'ku', 'け': 'ke', 'こ': 'ko'},
+            'SA':   {'さ': 'sa', 'し': 'shi', 'す': 'su', 'せ': 'se', 'そ': 'so'},
+            'TA':   {'た': 'ta', 'ち': 'chi', 'つ': 'tsu', 'て': 'te', 'と': 'to'},
+            'NA':   {'な': 'na', 'に': 'ni', 'ぬ': 'nu', 'ね': 'ne', 'の': 'no'},
+            'HA':   {'は': 'ha', 'ひ': 'hi', 'ふ': 'fu', 'へ': 'he', 'ほ': 'ho'},
+            'MA':   {'ま': 'ma', 'み': 'mi', 'む': 'mu', 'め': 'me', 'も': 'mo'},
+            'YA':   {'や': 'ya', 'ゆ': 'yu', 'よ': 'yo'},
+            'RA':   {'ら': 'ra', 'り': 'ri', 'る': 'ru', 'れ': 're', 'ろ': 'ro'},
+            'WA_N': {'わ': 'wa', 'を': 'wo', 'ん': 'n'}
+            // 濁音、半濁音等可自行擴充
+        };
+
+        let practiceKanaList = []; // 實際練習的平假名列表
+        let timeoutId = null; // 控制 10 秒循環的計時器
+        let timerInterval = null; // 控制每秒倒數的計時器
+        
+        const totalDuration = 10; // 總時間 10 秒
+        const showInfoTime = 5; // 顯示資訊的時間點 (第 5 秒)
+
+        const kanaDisplay = document.getElementById('kana-display');
+        const infoDisplay = document.getElementById('info-display');
+        const timerDisplay = document.getElementById('timer-display');
+        const startButton = document.getElementById('start-button');
+        
+        /**
+         * 取得選定的五十音列表，並組合成練習用的陣列
+         */
+        function getPracticeList() {
+            // 找出所有被勾選的 checkbox 的 value
+            const selectedGroups = Array.from(document.querySelectorAll('input[name="kana-group"]:checked'))
+                                       .map(checkbox => checkbox.value);
+            
+            if (selectedGroups.length === 0) {
+                alert("請至少選擇一個練習範圍才能開始！");
+                return [];
+            }
+
+            let fullList = {};
+            // 合併所有選定行內的假名
+            selectedGroups.forEach(groupKey => {
+                if (kanaGroups[groupKey]) {
+                    Object.assign(fullList, kanaGroups[groupKey]);
+                }
+            });
+
+            // 將結果轉換成 {kana: 'あ', romaji: 'a'} 的陣列格式
+            return Object.keys(fullList).map(kana => ({
+                kana: kana,
+                romaji: fullList[kana]
+            }));
+        }
+
+        /**
+         * 隨機選擇一個平假名
+         */
+        function getRandomKana() {
+            if (practiceKanaList.length === 0) return null;
+            const randomIndex = Math.floor(Math.random() * practiceKanaList.length);
+            return practiceKanaList[randomIndex];
+        }
+
+        /**
+         * 使用 Web Speech API 播放發音
+         */
+        function speakKana(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // 停止所有正在進行的語音
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ja-JP'; // 設定為日文
+                
+                // 嘗試設定日文語音
+                const voices = window.speechSynthesis.getVoices();
+                const japaneseVoice = voices.find(voice => voice.lang.startsWith('ja')); 
+                if (japaneseVoice) {
+                    utterance.voice = japaneseVoice;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn('您的瀏覽器不支援 Web Speech API 語音合成。');
+            }
+        }
+
+        /**
+         * 執行一次隨機產生和顯示的流程 (10 秒循環)
+         */
+        function runCycle() {
+            // 1. 重設狀態
+            if (timeoutId) clearTimeout(timeoutId);
+            if (timerInterval) clearInterval(timerInterval);
+            infoDisplay.classList.remove('show');
+            infoDisplay.textContent = '';
+            
+            // 2. 隨機選擇新的平假名
+            const selectedItem = getRandomKana();
+            if (!selectedItem) {
+                kanaDisplay.textContent = "請選擇範圍後點擊開始";
+                timerDisplay.textContent = "";
+                return;
+            }
+            
+            const currentKana = selectedItem.kana;
+            const pronunciation = selectedItem.romaji;
+
+            // 3. 初始顯示 (只顯示假名)
+            kanaDisplay.textContent = currentKana;
+            startButton.textContent = "練習進行中 (點擊停止)";
+            startButton.classList.add('running');
+            
+            let timeRemaining = totalDuration;
+            
+            // 4. 設定計時器，每秒更新
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                
+                // 顯示倒數時間
+                if (timeRemaining > 5) {
+                    timerDisplay.textContent = `倒數 ${timeRemaining} 秒 (猜測中...)`;
+                } else if (timeRemaining > 0) {
+                    timerDisplay.textContent = `倒數 ${timeRemaining} 秒 (揭曉中)`;
+                } else {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = `準備下一題...`;
+                }
+
+
+                // 5. 5秒後的操作 (顯示音標和播放發音)
+                if (timeRemaining === totalDuration - showInfoTime) {
+                    // 顯示音標 (羅馬拼音)
+                    infoDisplay.textContent = `音標: ${pronunciation}`;
+                    infoDisplay.classList.add('show');
+                    
+                    // 播放發音
+                    speakKana(currentKana);
+                }
+            }, 1000); // 每 1 秒執行一次
+
+            // 6. 設定 10 秒後重新執行 (下一個循環)
+            timeoutId = setTimeout(runCycle, totalDuration * 1000);
+        }
+
+        /**
+         * 停止所有計時器和語音
+         */
+        function stopGenerator() {
+            if (timeoutId) clearTimeout(timeoutId);
+            if (timerInterval) clearInterval(timerInterval);
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            // 重設按鈕和顯示狀態
+            startButton.textContent = "開始練習 / 重新開始";
+            startButton.classList.remove('running');
+            kanaDisplay.textContent = "已停止，請點擊開始";
+            infoDisplay.textContent = "";
+            infoDisplay.classList.remove('show');
+            timerDisplay.textContent = "";
+            timeoutId = null; // 清除 ID
+            timerInterval = null; // 清除 ID
+        }
+
+        /**
+         * 啟動/重新啟動產生器
+         */
+        function startGenerator() {
+            // 如果已經在運行，則停止
+            if (timeoutId) {
+                stopGenerator();
+                return;
+            }
+
+            practiceKanaList = getPracticeList();
+
+            if (practiceKanaList.length === 0) {
+                return; // 如果沒有選擇範圍，則退出
+            }
+
+            // 清除現有的所有計時器，防止重複
+            stopGenerator(); // 確保徹底停止
+
+            kanaDisplay.textContent = "即將開始...準備好！";
+            infoDisplay.textContent = "";
+            timerDisplay.textContent = "請準備";
+
+            // 延遲 1 秒後開始第一個循環，給使用者一個準備時間
+            setTimeout(runCycle, 1000);
+        }
+
+        // 頁面加載時先清除可能的語音
+        window.onload = () => {
+             if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        };
+    </script>
+
 </body>
-</html> 
+</html>
